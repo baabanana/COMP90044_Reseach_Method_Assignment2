@@ -1,0 +1,9 @@
+\section{Introduction} 
+Modern industrial recommender systems often optimise multiple objectives simultaneously. On short-video platforms, user engagement is reflected by signals such as watch time, completion, likes, and shares \citep{cai2024twostage}. Deep multi-task learning architectures have therefore been widely adopted in real-world applications and have achieved strong performance \citep{Ma2018MMoE, wang2025home, Zhang2026SMES}. A common baseline is the shared-bottom architecture, where tasks share lower layers before branching into task-specific towers \citep{Ma2018MMoE}. However, such shared representations can cause negative transfer, where knowledge learned for one task adversely affects the performance of another task \citep{Tang2020PLE}.
+
+To address this issue, one key line of research is the refinement of architecture, known as selective sharing. Instead of sharing all bottom-level parameters unconditionally, these models reserve capacity for individual tasks, extending task-specific components from output towers to gates, experts, and embeddings \citep{Ma2018MMoE, Tang2020PLE, Su2024STEM}. However, greater task-specific capacity can increase parameter, memory, and inference costs, which are tightly constrained in production systems. A separate line of work addresses the same conflict during optimisation rather than through architectural design \citep{Chen2018GradNorm, Yu2020PCGrad, Bai2024GradCraft} and is reviewed here for contrast. This review argues that current evaluations cannot establish where task-specific capacity is best allocated under a fixed parameter budget, because single-task baselines, task-level results, and matched-budget comparisons are rarely reported together.
+
+
+
+
+

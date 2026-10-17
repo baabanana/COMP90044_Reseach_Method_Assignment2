@@ -1,0 +1,120 @@
+\section{Comparative Evidence and Remaining Limitations}
+
+\subsection{Task-Level Benefits and Positive Transfer}
+Recent multi-task recommendation methods frequently report improvements over prior state-of-the-art models in terms of average AUC. However, average performance may conceal substantial variation in task-level transfer, including performance degradation on individual tasks. Therefore, a more informative task-level measure, $\Delta \mathrm{AUC}_t$, can be defined as the AUC gain of a multi-task model relative to its corresponding single-task baseline:
+
+\begin{equation}
+\Delta \mathrm{AUC}_t
+=
+\mathrm{AUC}_t^{\mathrm{MTL}}
+-
+\mathrm{AUC}_t^{\mathrm{STL}}.
+\end{equation}
+
+A positive value indicates positive transfer, whereas a negative value indicates that multi-task learning harms the performance of task $t$. Applying this measure to the KuaiRand1K results reported by STEM \citep{Su2024STEM} gives the task-level gains shown in Table~\ref{tab:stem_task_gain}. Tasks C, E, and F have positive-feedback rates of 0.10\%, 0.08\%, and 0.10\%, respectively, making them the three sparsest tasks by positive-feedback rate. They also achieve the largest AUC gains of $+0.0126$, $+0.0063$, and $+0.0249$. In contrast, Task D remains highly sparse at 0.26\% but shows a negative gain of $-0.0033$. Moreover, the two densest tasks, A and G, also experience small performance declines. Overall, the benefits of STEM are concentrated among the sparsest tasks, but the relationship between positive-feedback sparsity and task-level gain is not monotonic. Therefore, sparsity alone does not guarantee positive transfer. The reported results lack run-to-run variance estimates, so small task-level differences should be interpreted cautiously.
+
+\begin{table}[htbp]
+\centering
+\caption{Task-level AUC gains of STEM-Net relative to single-task models on KuaiRand1K.}
+\label{tab:stem_task_gain}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{ccccc}
+\hline
+\textbf{Task} &
+\textbf{Positive Ratio} &
+\textbf{STEM-Net AUC} &
+\textbf{Single-Task AUC} &
+$\boldsymbol{\Delta\mathrm{AUC}_t}$ \\
+\hline
+A & 37.76\% & 0.7523 & 0.7534 & $-0.0011$ \\
+B & 1.54\%  & 0.9282 & 0.9293 & $-0.0011$ \\
+C & 0.10\%  & 0.8420 & 0.8294 & $\mathbf{+0.0126}$ \\
+D & 0.26\%  & 0.8910 & 0.8943 & $-0.0033$ \\
+E & 0.08\%  & 0.8635 & 0.8572 & $\mathbf{+0.0063}$ \\
+F & 0.10\%  & 0.9070 & 0.8821 & $\mathbf{+0.0249}$ \\
+G & 26.17\% & 0.7637 & 0.7650 & $-0.0013$ \\
+H & 1.78\%  & 0.8359 & 0.8358 & $+0.0001$ \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+A similar pattern can be observed in the MMLRec benchmark \citep{yuan2024mmlrec}. On KuaiRec, PLE improves the average AUC from 0.7214 to 0.7240 ($+0.0026$). However, its AUC on Task 1 decreases from 0.7352 to 0.7328 ($-0.0024$), while that on Task 2 increases from 0.7077 to 0.7152 ($+0.0075$). Hence, the average gain conceals the performance degradation on Task 1, further demonstrating that average AUC cannot indicate whether every task benefits from multi-task learning.
+
+
+% \subsection{Resource Costs and Comparability}
+% Industrial deployment imposes latency and memory constraints, so resource cost determines whether a predictive gain can be used at all. Efficiency is widely reported in this line of work, but not consistently measured. As reported by STEM \citep{Su2024STEM}, STEM-Net achieves an AUC of 0.8301 on TikTok using only user-side features with 1.23$\times$ the number of parameters, while the all-feature configuration increases the parameter count to 2.85$\times$ but achieves only a marginally higher AUC of 0.8304. In contrast, the item-side configuration uses 2.62$\times$ the parameters but achieves an AUC of 0.8260, offering no improvement over the variant without task-specific embeddings. A similar pattern appears on KuaiRand1K, where the item-side configuration reduces AUC from 0.8382 to 0.8193. These results suggest that additional task-specific capacity does not necessarily improve performance, and that how this capacity is allocated across the model may matter more than simply increasing the parameter count. MoME instead reports model size in MB, with a substantial part of the reduction arising from storing binary masks at one bit per parameter rather than the 32 bits typically required by experts in MoE-based models \citep{Xu2024MoME}. However, storage efficiency is not equivalent to computational efficiency: the paper does not report latency or FLOPs, making it difficult to determine how far the reported memory savings translate into reduced inference cost. SMES reports both total parameter count and inference latency, showing that these measures can diverge. When scaled to 0.6B parameters, SMES achieves an average GAUC improvement of 0.84\% while increasing latency by only 4\,ms, whereas dense models exhibit approximately linear latency growth as their parameter counts increase \citep{Zhang2026SMES}. This occurs because sparse routing limits the number of experts activated for each instance. Consequently, total parameter count is an incomplete proxy for the inference cost of sparsely activated architectures. MGOE provides further evidence that efficiency cannot be characterised by a single metric. On Taobao, PLE and STEM have comparable parameter counts, at 13.29M and 13.59M respectively, yet their training times differ markedly, at 957s and 438s. More strikingly, although MMoE uses fewer parameters and less GPU memory than MGOE, it still requires longer training time, 333s compared with 258s \citep{Yao2026MGOE}. Parameter efficiency, memory efficiency, and runtime efficiency therefore do not necessarily align, and model rankings can reverse depending on which cost is measured.
+
+\subsection{Resource Costs and Comparability}
+Industrial deployment imposes latency and memory constraints, making resource cost central to whether predictive gains are practically usable. However, efficiency is measured inconsistently across multi-task recommendation studies. STEM's field ablation shows that parameter growth does not reliably predict performance. On KuaiRand1K, item-side specialisation uses 2.05$\times$ the parameters of the baseline configuration yet reduces average AUC from 0.8382 to 0.8193 \citep{Su2024STEM}. Since field coverage and capacity change together, this experiment cannot isolate either effect; nevertheless, it shows that parameter count alone cannot explain performance and motivates examining where task-specific capacity is allocated.
+
+
+MoME instead measures model size in MB, largely benefiting from one-bit binary masks, but does not report FLOPs or latency \citep{Xu2024MoME}. Its storage savings therefore cannot be directly interpreted as reduced inference cost. SMES further shows that total parameters and latency can diverge: scaling to 0.6B parameters improves average GAUC by 0.84\% while adding only 4\,ms of latency because only a bounded number of experts are activated per instance \citep{Zhang2026SMES}.
+
+MGOE similarly demonstrates that cost measures can produce different model rankings. PLE and STEM have comparable parameter counts, at 13.29M and 13.59M, but require 957s and 438s of training time, respectively. MMoE uses fewer parameters and less GPU memory than MGOE, yet takes longer to train, at 333s versus 258s \citep{Yao2026MGOE}. Even MMLRec, a unified benchmark for multi-task recommendation, standardises datasets, preprocessing, and predictive evaluation but reports only training time per epoch among its resource measures \citep{yuan2024mmlrec}. Consequently, parameter count, storage, memory, training time, and inference latency cannot be treated as interchangeable measures or used to construct directly comparable efficiency rankings.
+ 
+
+
+\subsection{Limits of Existing Evaluation}
+Answering the research question requires an evaluation that tracks task-level gains over single-task baselines across multiple matched parameter budgets while controlling where task-specific capacity is placed. Table~\ref{tab:evaluation_evidence} summarises the available evidence. STEM and MoME provide single-task baselines, but their capacity ablations primarily report average AUC \citep{Su2024STEM, Xu2024MoME}. HoME and SMES report task-level results under capacity changes, but omit corresponding single-task baselines; moreover, SMES matches architectures at only one budget point \citep{wang2025home, Zhang2026SMES}. OneRank scales encoder depth and width, but measures gains relative to its smallest configuration rather than to single-task models \citep{Tang2026OneRank}, while MGOE evaluates only one differently sized configuration per architecture \citep{Yao2026MGOE}. Consequently, the reviewed studies do not combine task-level gains over single-task baselines, multiple matched budgets, and a controlled comparison of embedding- and expert-level capacity. Since PLE and STEM differ in gating and gradient flow, directly comparing their original implementations cannot isolate the effect of capacity placement.
+
+% 需要 \usepackage{booktabs} 和 \usepackage{makecell}
+\begin{table}[!t]
+\centering
+\small
+\caption{Evidence provided by capacity-related evaluations in the reviewed studies.
+STL baselines in STEM, MoME, OneRank, and MGOE are reported outside their capacity
+analyses. OneRank's scaling gains are measured relative to its smallest configuration
+rather than to single-task models.}
+\label{tab:evaluation_evidence}
+
+\begin{tabular}{lcccl}
+\toprule
+\textbf{Study}
+& \makecell{\textbf{Per-task results under}\\\textbf{capacity change}}
+& \makecell{\textbf{STL}\\\textbf{baseline}}
+& \makecell{\textbf{Multiple matched}\\\textbf{budgets}}
+& \textbf{Capacity varied at} \\
+\midrule
+
+STEM \citep{Su2024STEM}
+& No (average only)
+& Yes
+& No
+& Embedding fields \\
+
+MoME \citep{Xu2024MoME}
+& No (average only)
+& Yes
+& No
+& Expert masking/pruning \\
+
+HoME \citep{wang2025home}
+& Yes
+& No
+& No
+& Expert number \\
+
+SMES \citep{Zhang2026SMES}
+& Yes
+& No
+& No (one point)
+& Expert sparse routing \\
+
+OneRank \citep{Tang2026OneRank}
+& Yes
+& Yes
+& No
+& Encoder depth/width \\
+
+MGOE \citep{Yao2026MGOE}
+& No sweep
+& Yes
+& No
+& --- \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+

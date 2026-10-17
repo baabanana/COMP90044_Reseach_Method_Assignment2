@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{makecell}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+
+\setlist[itemize]{
+  leftmargin=1.5em,
+  itemsep=0.25em,
+  topsep=0.25em
+}
+
+\urlstyle{same}
+
+% ---------- Student information ----------
+\newcommand{\studentname}{Chengyu Li}
+\newcommand{\studentid}{1828290}
+\newcommand{\wordcount}{2060}
+
+% ---------- Research topic ----------
+\newcommand{\researchtopic}
+{Selective Representation Sharing in Multi-Task Recommender Systems}
+
+\newcommand{\researchquestion}
+{Under a common backbone and across matched parameter budgets, how does allocating task-specific capacity at the embedding versus expert level affect task-level AUC gains over corresponding single-task baselines, particularly for tasks with sparse positive feedback?}
+
+\title{
+  \vspace{-2.2em}
+  {\large\textbf{COMP90044 Research Methods}}\\[0.3em]
+  {\normalsize Assignment 1 -- Activity 2: Literature Review}\\[0.5em]
+  {\LARGE\textbf{\researchtopic}}\\[0.2em]
+}
+
+\author{\studentname\quad\studentid}
+\date{Word count: \wordcount}
+
+\begin{document}
+
+\maketitle
+
+\vspace{-1.5em}
+\begin{center}
+\parbox{0.92\textwidth}{
+  \small
+  \textbf{Research question:} \researchquestion
+}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/1.introduction}
+\input{sections/2.baseline_problem}
+\input{sections/3.selective_representation}
+\input{sections/4.Optimisation_Based}
+\input{sections/5.Evidence}
+\input{sections/6.gap.tex}
+
+% \nocite{*}
+
+\newpage
+\bibliographystyle{IEEEtranSN}
+\bibliography{references}
+
+\newpage
+\appendix
+\section{GenAI Usage}
+
+GenAI was used as a supporting tool during the preparation of this literature review. Representative uses included improving grammar, clarity, concision, and academic phrasing; discussing papers that had already been read; checking calculations and values used in comparison tables; and reviewing the overall structure and coherence of the review.
+
+Example prompts included:
+\begin{itemize}
+    \item ``Please improve the grammar and make this paragraph more concise and academic without changing its meaning.''
+    \item ``Please check whether the calculations and values in this comparison table are correct.''
+    \item ``Please review the overall structure of this literature review and identify any logical gaps or unnecessary repetition.''
+\end{itemize}
+
+All sources, numerical results, interpretations, and final written content were independently checked by the author.
+
+\end{document}

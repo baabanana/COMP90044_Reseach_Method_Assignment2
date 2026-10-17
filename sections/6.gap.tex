@@ -1,0 +1,13 @@
+\section{Research Gap and Future Direction}
+The evidence reviewed above shows that improvements in average performance can coexist
+with negative transfer on individual tasks. It also demonstrates that parameter count,
+storage, memory consumption, and runtime capture distinct aspects of resource cost.
+Neither observation, however, has been brought to bear on where task-specific capacity should be placed when models are compared under matched parameter budgets. This motivates the following research question:
+
+\begin{quote}
+\begin{minipage}{\linewidth}\itshape
+\textit{Under a common backbone and across matched parameter budgets, how does allocating task-specific capacity at the embedding versus expert level affect task-level AUC gains over corresponding single-task baselines, particularly for tasks with sparse positive feedback?}
+\end{minipage}
+\end{quote}
+
+A suitable evaluation would construct embedding-specialised and expert-specialised variants under a common backbone and match their total trainable parameter counts at several budget levels. Each variant would be compared with corresponding single-task baselines using $\Delta\mathrm{AUC}_t$. Parameter count would serve as the controlled quantity, with memory consumption and inference latency reported as complementary resource measures. This evaluation would reveal whether positive transfer for sparse tasks is preserved as capacity becomes constrained and distinguish the effect of capacity placement from that of simply increasing model size.
